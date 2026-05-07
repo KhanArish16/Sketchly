@@ -22,7 +22,7 @@ export default function Editor() {
     }, 3000);
 
     return () => clearInterval(interval);
-  }, []);
+  }, [roomId]);
 
   const checkAccess = async () => {
     const { data: userData } = await supabase.auth.getUser();
@@ -76,7 +76,7 @@ export default function Editor() {
   }
 
   return (
-    <div className="h-screen bg-[#080a0f] flex overflow-hidden ">
+    <div className="h-screen bg-[#080a0f] flex overflow-hidden">
       <LeftSidebar room={room} roomId={roomId} />
 
       <CanvasArea />
