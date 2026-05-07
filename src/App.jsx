@@ -5,9 +5,11 @@ import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import Login from "./pages/Login";
 import Signup from "./pages/Signup";
 import Dashboard from "./pages/Dashboard";
-import ProtectedRoute from "./components/ProtectedRoute";
+import ProtectedRoute from "./route/ProtectedRoute";
 import Navbar from "./components/Navbar";
 import Home from "./pages/Home";
+import CreateRoomPage from "./pages/CreateRoomPage";
+import Editor from "./pages/Editor";
 
 export default function App() {
   const [session, setSession] = useState(undefined);
@@ -42,6 +44,7 @@ export default function App() {
         <Navbar session={session} />
         <Routes>
           <Route path="/" element={<Navigate to="/home" />} />
+          <Route path="/home" element={<Home />} />
           <Route path="/login" element={<Login />} />
           <Route path="/signup" element={<Signup />} />
           <Route
@@ -53,7 +56,23 @@ export default function App() {
             }
           />
 
-          <Route path="/home" element={<Home />} />
+          <Route
+            path="/create-room"
+            element={
+              <ProtectedRoute session={session}>
+                <CreateRoomPage />
+              </ProtectedRoute>
+            }
+          />
+
+          <Route
+            path="/editor/:roomId"
+            element={
+              <ProtectedRoute session={session}>
+                <Editor />
+              </ProtectedRoute>
+            }
+          />
         </Routes>
       </div>
     </BrowserRouter>

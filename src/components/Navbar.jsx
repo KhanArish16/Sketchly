@@ -28,7 +28,6 @@ export default function Navbar({ session }) {
   return (
     <nav className="fixed top-0 left-0 right-0 z-50 bg-[#080A0F]/85 backdrop-blur-xl border-b border-white/[0.07]">
       <div className="flex items-center justify-between px-6 sm:px-8 h-[60px]">
-        {/* Logo */}
         <Link
           to="/"
           className="flex items-center gap-2.5 no-underline group flex-shrink-0"
@@ -41,7 +40,6 @@ export default function Navbar({ session }) {
           </span>
         </Link>
 
-        {/* Centre nav links — desktop only */}
         <div className="hidden md:flex items-center gap-1 absolute left-1/2 -translate-x-1/2">
           {navLinks.map(({ to, label }) => (
             <Link
@@ -61,7 +59,6 @@ export default function Navbar({ session }) {
           ))}
         </div>
 
-        {/* Right side — desktop */}
         <div className="hidden md:flex items-center gap-2">
           {!session ? (
             <>
@@ -92,7 +89,6 @@ export default function Navbar({ session }) {
           )}
         </div>
 
-        {/* Hamburger — mobile only */}
         <button
           className="md:hidden flex flex-col justify-center items-center gap-[5px] w-8 h-8 cursor-pointer"
           onClick={() => setMenuOpen((o) => !o)}
@@ -117,7 +113,6 @@ export default function Navbar({ session }) {
         </button>
       </div>
 
-      {/* Mobile menu */}
       <div
         className="md:hidden overflow-hidden transition-all duration-300"
         style={{
@@ -126,7 +121,6 @@ export default function Navbar({ session }) {
         }}
       >
         <div className="px-4 pb-4 pt-1 flex flex-col gap-1 border-t border-white/[0.06]">
-          {/* Nav links */}
           {navLinks.map(({ to, label }) => (
             <Link
               key={to}
@@ -149,7 +143,6 @@ export default function Navbar({ session }) {
 
           <div className="h-px bg-white/[0.06] my-1" />
 
-          {/* Auth actions */}
           {!session ? (
             <div className="flex flex-col gap-2 pt-1">
               <Link

@@ -32,11 +32,14 @@ export default function Signup() {
     }
 
     if (data.user) {
-      await supabase
-        .from("profiles")
-        .insert([
-          { id: data.user.id, first_name: firstName, last_name: lastName },
-        ]);
+      await supabase.from("profiles").insert([
+        {
+          id: user.id,
+          first_name,
+          last_name,
+          email,
+        },
+      ]);
     }
 
     navigate("/login", {

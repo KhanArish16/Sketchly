@@ -310,7 +310,6 @@ export default function Home() {
           wireframes, and interactive prototypes — together, live.
         </motion.p>
 
-        {/* Social proof avatars */}
         <div className="flex justify-center items-center gap-3 mb-6">
           <div className="flex">
             {[
@@ -349,7 +348,6 @@ export default function Home() {
         </p>
       </section>
 
-      {/* STATS */}
       <div className="grid grid-cols-2 md:grid-cols-4 border-t border-b border-white/[0.07]">
         {[
           { num: "18K+", label: "Active designers" },
@@ -367,7 +365,6 @@ export default function Home() {
         ))}
       </div>
 
-      {/* FEATURES */}
       <section className="px-10 py-20">
         <p className="text-[11px] text-[#a89ef7] uppercase tracking-[.08em] mb-3">
           Platform features
@@ -404,7 +401,6 @@ export default function Home() {
         </div>
       </section>
 
-      {/* HOW IT WORKS */}
       <section className="px-10 pb-20">
         <p className="text-[11px] text-[#a89ef7] uppercase tracking-[.08em] mb-3">
           How it works
@@ -428,7 +424,6 @@ export default function Home() {
         </div>
       </section>
 
-      {/* TESTIMONIALS */}
       <section className="px-10 pb-20">
         <p className="text-[11px] text-[#a89ef7] uppercase tracking-[.08em] mb-3">
           Testimonials
@@ -474,7 +469,6 @@ export default function Home() {
         </div>
       </section>
 
-      {/* CTA BAND */}
       <section className="mx-10 mb-20 bg-[#0f1020] border border-[#5b50e8]/25 rounded-2xl px-10 py-16 text-center">
         <h2 className="text-[36px] font-medium mb-3">
           Ready to design better, together?
@@ -496,7 +490,6 @@ export default function Home() {
         </div>
       </section>
 
-      {/* FOOTER */}
       <footer className="flex items-center justify-between px-10 py-8 border-t border-white/[0.07]">
         <div className="flex items-center gap-2 text-[15px] font-medium">
           <div className="w-6 h-6 bg-[#5b50e8] rounded-md flex items-center justify-center">
