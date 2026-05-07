@@ -1,11 +1,15 @@
-import { useParams, useNavigate } from "react-router-dom";
+import { useParams } from "react-router-dom";
 import { useEffect, useState } from "react";
 import { supabase } from "../lib/supabse";
+
 import JoinRoom from "../components/JoinRoom";
+
+import LeftSidebar from "../editor/LeftSidebar";
+import RightSidebar from "../editor/RightSidebar";
+import CanvasArea from "../editor/CanvasArea";
 
 export default function Editor() {
   const { roomId } = useParams();
-  const navigate = useNavigate();
 
   const [status, setStatus] = useState("loading");
   const [room, setRoom] = useState(null);
@@ -22,6 +26,7 @@ export default function Editor() {
 
   const checkAccess = async () => {
     const { data: userData } = await supabase.auth.getUser();
+
     const user = userData.user;
 
     if (!user) {
@@ -34,32 +39,36 @@ export default function Editor() {
       .select("*")
       .eq("room_id", roomId)
       .eq("user_id", user.id)
-      .single();
+      .maybeSingle();
 
     if (data) {
-      fetchRoom();
+      const { data: roomData } = await supabase
+        .from("rooms")
+        .select("*")
+        .eq("id", roomId)
+        .single();
+
+      setRoom(roomData);
       setStatus("allowed");
     } else {
       setStatus("not_allowed");
     }
   };
 
-  const fetchRoom = async () => {
-    const { data } = await supabase
-      .from("rooms")
-      .select("*")
-      .eq("id", roomId)
-      .single();
-
-    setRoom(data);
-  };
-
   if (status === "loading") {
-    return <div className="p-6 text-white">Loading...</div>;
+    return (
+      <div className="h-screen bg-[#080a0f] flex items-center justify-center text-white">
+        Loading...
+      </div>
+    );
   }
 
   if (status === "no_auth") {
-    return <div className="p-6 text-white">Please login first</div>;
+    return (
+      <div className="h-screen bg-[#080a0f] flex items-center justify-center text-white">
+        Please login first
+      </div>
+    );
   }
 
   if (status === "not_allowed") {
@@ -67,35 +76,12 @@ export default function Editor() {
   }
 
   return (
-    <div className="h-screen bg-[#080a0f] text-white">
-      <div className="h-14 border-b border-gray-800 flex items-center justify-between px-6">
-        <div>
-          <h1 className="font-semibold">{room?.name}</h1>
-        </div>
+    <div className="h-screen bg-[#080a0f] flex overflow-hidden ">
+      <LeftSidebar room={room} roomId={roomId} />
 
-        <div className="flex items-center gap-3">
-          <button
-            onClick={() => navigate(`/room/${roomId}`)}
-            className="bg-gray-800 px-4 py-2 rounded hover:bg-gray-700"
-          >
-            Manage Access
-          </button>
+      <CanvasArea />
 
-          <button
-            onClick={() => {
-              navigator.clipboard.writeText(window.location.href);
-              alert("Room link copied!");
-            }}
-            className="bg-blue-500 px-4 py-2 rounded"
-          >
-            Share Room
-          </button>
-        </div>
-      </div>
-
-      <div className="flex items-center justify-center h-[calc(100vh-56px)]">
-        <p className="text-gray-400">Canvas coming next...</p>
-      </div>
+      <RightSidebar />
     </div>
   );
 }

@@ -3,79 +3,159 @@ import { supabase } from "../lib/supabse";
 import { useNavigate, Link } from "react-router-dom";
 
 export default function Signup() {
-  const [firstName, setFirstName] = useState("");
-  const [lastName, setLastName] = useState("");
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState("");
   const navigate = useNavigate();
 
-  const signup = async () => {
-    if (!firstName || !lastName || !email || !password) {
-      setError("Please fill in all fields.");
-      return;
-    }
-    if (password.length < 8) {
-      setError("Password must be at least 8 characters.");
-      return;
-    }
-    setLoading(true);
+  const [firstName, setFirstName] = useState("");
+
+  const [lastName, setLastName] = useState("");
+
+  const [email, setEmail] = useState("");
+
+  const [password, setPassword] = useState("");
+
+  const [loading, setLoading] = useState(false);
+
+  const [error, setError] = useState("");
+
+  const [success, setSuccess] = useState(false);
+
+  const signup = async (e) => {
+    e.preventDefault();
+
     setError("");
 
-    const { data, error } = await supabase.auth.signUp({ email, password });
-
-    if (error) {
-      setError(error.message);
-      setLoading(false);
+    if (!firstName || !lastName || !email || !password) {
+      setError("Please fill all fields");
       return;
     }
 
-    if (data.user) {
-      await supabase.from("profiles").insert([
-        {
-          id: user.id,
-          first_name,
-          last_name,
-          email,
-        },
-      ]);
+    if (password.length < 8) {
+      setError("Password must be at least 8 characters");
+      return;
     }
 
-    navigate("/login", {
-      state: { message: "Check your email to confirm your account!" },
-    });
+    try {
+      setLoading(true);
+
+      const { data, error: signupError } = await supabase.auth.signUp({
+        email,
+        password,
+
+        options: {
+          emailRedirectTo: "http://localhost:5173/login",
+        },
+      });
+
+      if (signupError) {
+        if (signupError.message.includes("429")) {
+          setError(
+            "Too many signup attempts. Please wait a minute and try again.",
+          );
+        } else {
+          setError(signupError.message);
+        }
+
+        return;
+      }
+
+      if (data?.user?.id) {
+        const { error: profileError } = await supabase.from("profiles").upsert([
+          {
+            id: data.user.id,
+            first_name: firstName,
+            last_name: lastName,
+            email,
+          },
+        ]);
+
+        if (profileError) {
+          setError(profileError.message);
+          return;
+        }
+      }
+
+      setSuccess(true);
+    } catch (err) {
+      setError("Something went wrong. Please try again.");
+    } finally {
+      setLoading(false);
+    }
   };
 
   const inputClass =
-    "w-full px-4 py-3 bg-white/[0.04] border border-white/[0.09] rounded-xl text-white text-[14px] placeholder-white/20 outline-none transition-all focus:border-indigo-500/60 focus:bg-indigo-500/[0.06] focus:shadow-[0_0_0_3px_rgba(99,102,241,0.12)]";
+    "w-full px-4 py-3 bg-white/[0.04] border border-white/[0.08] rounded-xl text-white text-sm placeholder-white/20 outline-none focus:border-indigo-500 transition";
+
+  if (success) {
+    return (
+      <div className="min-h-screen bg-[#080A0F] flex items-center justify-center px-4 relative overflow-hidden">
+        <div className="absolute top-[-120px] right-[-120px] w-[420px] h-[420px] bg-green-500/10 blur-[120px] rounded-full" />
+
+        <div className="w-full max-w-[430px] bg-[#0D1018] border border-white/[0.06] rounded-2xl p-8 relative z-10">
+          <div className="w-16 h-16 rounded-2xl bg-green-500/10 border border-green-500/20 flex items-center justify-center mx-auto mb-6">
+            <div className="w-7 h-7 rounded-full bg-green-500" />
+          </div>
+
+          <h1 className="text-3xl font-bold text-white text-center">
+            Verify your email
+          </h1>
+
+          <p className="text-sm text-white/40 mt-4 text-center leading-relaxed">
+            We sent a confirmation link to:
+          </p>
+
+          <p className="text-indigo-400 mt-2 text-sm text-center break-all">
+            {email}
+          </p>
+
+          <div className="mt-8 bg-white/[0.03] border border-white/[0.06] rounded-xl p-4">
+            <p className="text-sm text-white/70">Next steps:</p>
+
+            <ul className="mt-3 space-y-2 text-sm text-white/40">
+              <li>• Open your inbox</li>
+
+              <li>• Click the verification link</li>
+
+              <li>• Return to login page</li>
+
+              <li>• Start collaborating in Sketchly</li>
+            </ul>
+          </div>
+
+          <button
+            onClick={() => navigate("/login")}
+            className="mt-8 w-full bg-indigo-600 hover:bg-indigo-500 text-white py-3 rounded-xl font-semibold transition"
+          >
+            Go to Login
+          </button>
+        </div>
+      </div>
+    );
+  }
 
   return (
-    <div className="min-h-screen flex items-center justify-center px-4 py-8 pt-[80px] relative overflow-hidden">
-      <div className="absolute top-[-100px] right-[-100px] w-[450px] h-[450px] rounded-full bg-indigo-600/10 blur-[100px] pointer-events-none" />
-      <div className="absolute bottom-[-100px] left-[-100px] w-[400px] h-[400px] rounded-full bg-violet-500/8 blur-[80px] pointer-events-none" />
+    <div className="min-h-screen bg-[#080A0F] flex items-center justify-center px-4 relative overflow-hidden">
+      <div className="absolute top-[-120px] right-[-120px] w-[420px] h-[420px] bg-indigo-500/10 blur-[120px] rounded-full" />
 
-      <div className="relative w-full max-w-[420px] bg-[#0D1018] border border-white/[0.09] rounded-2xl p-9 shadow-[0_40px_80px_rgba(0,0,0,0.5),0_0_0_1px_rgba(255,255,255,0.03)] animate-[slideUp_0.4s_ease]">
-        <div className="absolute top-0 left-[15%] right-[15%] h-px bg-gradient-to-r from-transparent via-indigo-500/50 to-transparent rounded-full" />
+      <div className="absolute bottom-[-120px] left-[-120px] w-[420px] h-[420px] bg-violet-500/10 blur-[120px] rounded-full" />
 
+      <div className="relative z-10 w-full max-w-[420px] bg-[#0D1018] border border-white/[0.06] rounded-2xl p-8 shadow-[0_20px_80px_rgba(0,0,0,0.5)]">
         <div className="mb-8">
-          <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-indigo-500/10 border border-indigo-500/20 text-indigo-300 text-[11px] font-semibold tracking-widest uppercase mb-5">
-            <span className="w-1.5 h-1.5 rounded-full bg-indigo-400" />
+          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-indigo-500/10 border border-indigo-500/20 text-indigo-300 text-[11px] uppercase tracking-widest font-semibold mb-5">
+            <div className="w-1.5 h-1.5 rounded-full bg-indigo-400" />
             Create account
           </div>
-          <h1 className="font-display text-[28px] font-extrabold text-white tracking-tight leading-tight mb-2">
-            Start designing
-            <br />
-            with Sketchly
+
+          <h1 className="text-3xl font-bold text-white leading-tight">
+            Join Sketchly
           </h1>
-          <p className="text-[14px] text-white/40 font-light">
-            Free forever. No credit card required.
+
+          <p className="text-sm text-white/40 mt-2">
+            Create collaborative design rooms with realtime editing.
           </p>
         </div>
 
         {error && (
-          <div className="mb-4 px-4 py-3 rounded-xl bg-red-500/10 border border-red-500/20 text-red-400 text-[13px] flex items-center gap-2">
-            <span className="w-1.5 h-1.5 rounded-full bg-red-400 flex-shrink-0" />
+          <div className="mb-5 bg-red-500/10 border border-red-500/20 text-red-400 text-sm rounded-xl px-4 py-3">
             {error}
           </div>
         )}
@@ -83,51 +163,58 @@ export default function Signup() {
         <div className="space-y-4">
           <div className="grid grid-cols-2 gap-3">
             <div>
-              <label className="block text-[11px] font-semibold text-white/40 uppercase tracking-[0.6px] mb-2">
+              <label className="block text-[11px] uppercase tracking-wide text-white/40 mb-2">
                 First Name
               </label>
+
               <input
+                type="text"
+                placeholder="Arish"
                 value={firstName}
                 onChange={(e) => setFirstName(e.target.value)}
-                placeholder="Alex"
                 className={inputClass}
               />
             </div>
+
             <div>
-              <label className="block text-[11px] font-semibold text-white/40 uppercase tracking-[0.6px] mb-2">
+              <label className="block text-[11px] uppercase tracking-wide text-white/40 mb-2">
                 Last Name
               </label>
+
               <input
+                type="text"
+                placeholder="Khan"
                 value={lastName}
                 onChange={(e) => setLastName(e.target.value)}
-                placeholder="Kim"
                 className={inputClass}
               />
             </div>
           </div>
 
           <div>
-            <label className="block text-[11px] font-semibold text-white/40 uppercase tracking-[0.6px] mb-2">
+            <label className="block text-[11px] uppercase tracking-wide text-white/40 mb-2">
               Email
             </label>
+
             <input
               type="email"
+              placeholder="you@example.com"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
-              placeholder="you@company.com"
               className={inputClass}
             />
           </div>
 
           <div>
-            <label className="block text-[11px] font-semibold text-white/40 uppercase tracking-[0.6px] mb-2">
+            <label className="block text-[11px] uppercase tracking-wide text-white/40 mb-2">
               Password
             </label>
+
             <input
               type="password"
+              placeholder="Minimum 8 characters"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
-              placeholder="Min. 8 characters"
               className={inputClass}
             />
           </div>
@@ -136,42 +223,21 @@ export default function Signup() {
         <button
           onClick={signup}
           disabled={loading}
-          className="relative mt-6 w-full py-3.5 bg-indigo-600 hover:bg-indigo-500 disabled:opacity-60 text-white text-[14px] font-semibold rounded-xl transition-all shadow-[0_4px_20px_rgba(99,102,241,0.35)] hover:shadow-[0_8px_28px_rgba(99,102,241,0.5)] hover:-translate-y-[1px] active:translate-y-0 overflow-hidden cursor-pointer"
+          className="mt-6 w-full bg-indigo-600 hover:bg-indigo-500 disabled:opacity-60 text-white py-3.5 rounded-xl font-semibold transition-all shadow-[0_8px_30px_rgba(99,102,241,0.35)]"
         >
-          <span className="relative z-10">
-            {loading ? "Creating account..." : "Create Account →"}
-          </span>
-          <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/10 to-transparent" />
+          {loading ? "Creating Account..." : "Create Account"}
         </button>
 
-        <p className="text-center text-[12px] text-white/20 mt-4 leading-relaxed">
-          By signing up, you agree to our{" "}
-          <span className="text-white/40 hover:text-white/60 cursor-pointer transition-colors">
-            Terms
-          </span>{" "}
-          and{" "}
-          <span className="text-white/40 hover:text-white/60 cursor-pointer transition-colors">
-            Privacy Policy
-          </span>
-        </p>
-
-        <p className="text-center text-[13px] text-white/30 mt-5">
+        <p className="text-center text-sm text-white/30 mt-6">
           Already have an account?{" "}
           <Link
             to="/login"
-            className="text-violet-400 hover:text-violet-300 font-medium transition-colors no-underline"
+            className="text-indigo-400 hover:text-indigo-300 transition"
           >
             Sign in
           </Link>
         </p>
       </div>
-
-      <style>{`
-        @keyframes slideUp {
-          from { opacity: 0; transform: translateY(24px); }
-          to   { opacity: 1; transform: translateY(0); }
-        }
-      `}</style>
     </div>
   );
 }
