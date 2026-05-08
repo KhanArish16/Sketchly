@@ -11,6 +11,10 @@ import {
   Users,
   Bell,
   Loader2,
+  ChevronLeft,
+  ArrowLeft,
+  PanelLeftClose,
+  PanelLeftOpen,
 } from "lucide-react";
 
 export default function LeftSidebar({ room: initialRoom, roomId }) {
@@ -20,6 +24,7 @@ export default function LeftSidebar({ room: initialRoom, roomId }) {
   const [owner, setOwner] = useState(null);
   const [currentUser, setCurrentUser] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [isOpen, setIsOpen] = useState(true);
 
   const [renameOpen, setRenameOpen] = useState(false);
   const [newName, setNewName] = useState("");
@@ -287,8 +292,56 @@ export default function LeftSidebar({ room: initialRoom, roomId }) {
         </div>
       )}
 
-      <div className="w-[240px] h-screen bg-[#09090f] border-r border-white/[0.06] text-white flex flex-col select-none">
+      {!isOpen && (
+        <div className="relative h-screen w-10 flex-shrink-0 bg-[#09090f] border-r border-white/[0.06] flex flex-col items-center py-3 gap-3">
+          <a
+            href="/dashboard"
+            className="w-7 h-7 flex items-center justify-center rounded-lg hover:bg-white/[0.07] text-white/30 hover:text-white transition"
+          >
+            <ArrowLeft size={13} />
+          </a>
+          <div className="w-4 h-px bg-white/[0.06]" />
+          <button
+            onClick={() => setIsOpen(true)}
+            className="w-7 h-7 flex items-center justify-center rounded-lg hover:bg-white/[0.07] text-white/30 hover:text-white transition"
+          >
+            <PanelLeftOpen size={13} />
+          </button>
+          {isOwner && requests.length > 0 && (
+            <span className="absolute top-[68px] right-1.5 w-2 h-2 rounded-full bg-amber-400" />
+          )}
+        </div>
+      )}
+
+      <div
+        className={`
+    h-screen bg-[#09090f] border-r border-white/[0.06] text-white flex flex-col select-none flex-shrink-0
+    transition-all duration-300 ease-in-out overflow-hidden
+    ${isOpen ? "w-[240px] opacity-100" : "w-0 opacity-0 pointer-events-none border-r-0"}
+  `}
+      >
         <div className="px-3.5 pt-3.5 pb-3 border-b border-white/[0.06]">
+          <div className="flex items-center justify-between mb-2.5">
+            <a
+              href="/dashboard"
+              className="flex items-center gap-1.5 text-white/30 hover:text-white/70 transition text-[11px] group"
+              title="Back to dashboard"
+            >
+              <ChevronLeft
+                size={13}
+                className="group-hover:-translate-x-0.5 transition-transform"
+              />
+              <span>Dashboard</span>
+            </a>
+            <button
+              onClick={() => setIsOpen(false)}
+              className="p-1 rounded-lg hover:bg-white/[0.07] text-white/20 hover:text-white/60 transition"
+              title="Collapse sidebar"
+            >
+              <PanelLeftClose size={13} />
+            </button>
+          </div>
+
           <div className="flex items-start justify-between gap-2">
             <div className="min-w-0">
               <h1 className="text-[13px] font-semibold truncate text-white leading-tight">

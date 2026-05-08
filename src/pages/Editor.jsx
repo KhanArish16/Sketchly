@@ -5,8 +5,7 @@ import { supabase } from "../lib/supabse";
 import JoinRoom from "../components/JoinRoom";
 
 import LeftSidebar from "../editor/LeftSidebar";
-import RightSidebar from "../editor/RightSidebar";
-import CanvasArea from "../editor/CanvasArea";
+import TldrawCanvas from "../editor/TldrawCanvas";
 
 export default function Editor() {
   const { roomId } = useParams();
@@ -79,9 +78,7 @@ export default function Editor() {
     <div className="h-screen bg-[#080a0f] flex overflow-hidden">
       <LeftSidebar room={room} roomId={roomId} />
 
-      <CanvasArea />
-
-      <RightSidebar />
+      <TldrawCanvas roomId={roomId} />
     </div>
   );
 }
