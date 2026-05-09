@@ -276,6 +276,9 @@ const testimonials = [
 ];
 
 export default function Home() {
+  const isLoggedIn = !!localStorage.getItem(
+    "sb-cwzzssimqehmxyfpwyay-auth-token",
+  );
   const navigate = useNavigate();
 
   return (
@@ -334,7 +337,7 @@ export default function Home() {
 
         <div className="flex gap-3 justify-center mb-4">
           <button
-            onClick={() => navigate("/signup")}
+            onClick={() => navigate(isLoggedIn ? "/dashboard" : "/signup")}
             className="bg-[#5b50e8] text-white px-7 py-3 rounded-[9px] text-[15px] font-medium hover:bg-[#4a40d0] transition"
           >
             Start designing free →
@@ -479,7 +482,7 @@ export default function Home() {
         </p>
         <div className="flex gap-3 justify-center">
           <button
-            onClick={() => navigate("/signup")}
+            onClick={() => navigate(isLoggedIn ? "/dashboard" : "/signup")}
             className="bg-[#5b50e8] text-white px-7 py-3 rounded-[9px] text-[15px] font-medium hover:bg-[#4a40d0] transition"
           >
             Create free account →

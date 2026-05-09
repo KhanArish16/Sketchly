@@ -285,7 +285,7 @@ export default function Dashboard() {
                           Created by you
                         </p>
 
-                        <div className="absolute bottom-4 left-5 flex items-center gap-1 opacity-0 group-hover:opacity-100 transition">
+                        <div className="absolute bottom-4 right-5 flex items-center gap-1 opacity-0 group-hover:opacity-100 transition">
                           <span className="w-1.5 h-1.5 rounded-full bg-emerald-400" />
                           <span className="text-[10px] text-emerald-400/70">
                             Open room
@@ -366,7 +366,7 @@ export default function Dashboard() {
                             </p>
                           </div>
 
-                          <div className="absolute bottom-4 left-5 flex items-center gap-1 opacity-0 group-hover:opacity-100 transition">
+                          <div className="absolute bottom-4 right-5 flex items-center gap-1 opacity-0 group-hover:opacity-100 transition">
                             <span className="w-1.5 h-1.5 rounded-full bg-teal-400" />
                             <span className="text-[10px] text-teal-400/70">
                               Open room

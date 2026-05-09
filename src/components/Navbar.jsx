@@ -1,13 +1,39 @@
 import { useState } from "react";
-import { Link, useLocation } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import { supabase } from "../lib/supabse";
+import { LayoutGrid, LogOut } from "lucide-react";
 
 export default function Navbar({ session }) {
   const location = useLocation();
+  const navigate = useNavigate();
   const [menuOpen, setMenuOpen] = useState(false);
+
+  const profile = session?.user;
+
+  const displayName = () => {
+    if (!profile) return "User";
+
+    const first = profile.user_metadata?.first_name || "";
+    const last = profile.user_metadata?.last_name || "";
+    const full = `${first} ${last}`.trim();
+
+    return full || profile.email || "User";
+  };
+
+  const initials = () => {
+    const first = profile?.user_metadata?.first_name || "";
+    const last = profile?.user_metadata?.last_name || "";
+
+    if (first) {
+      return (first[0] + (last[0] || "")).toUpperCase();
+    }
+
+    return (profile?.email?.[0] || "U").toUpperCase();
+  };
 
   const logout = async () => {
     await supabase.auth.signOut();
+    navigate("/home");
     setMenuOpen(false);
   };
 
@@ -16,20 +42,15 @@ export default function Navbar({ session }) {
   const navLinks = session
     ? [
         { to: "/", label: "Home" },
-        { to: "/dashboard", label: "My Designs" },
-        { to: "/room", label: "My Room" },
-        { to: "/templates", label: "Templates" },
+        { to: "/dashboard", label: "Workspace" },
       ]
-    : [
-        { to: "/", label: "Home" },
-        { to: "/templates", label: "Templates" },
-      ];
+    : [{ to: "/", label: "Home" }];
 
   return (
     <nav className="fixed top-0 left-0 right-0 z-50 bg-[#080A0F]/85 backdrop-blur-xl border-b border-white/[0.07]">
       <div className="flex items-center justify-between px-6 sm:px-8 h-[60px]">
         <Link
-          to="/"
+          to={session ? "/dashboard" : "/home"}
           className="flex items-center gap-2.5 no-underline group flex-shrink-0"
         >
           <div className="w-8 h-8 rounded-[9px] bg-indigo-600 flex items-center justify-center shadow-[0_0_20px_rgba(99,102,241,0.35)] relative overflow-hidden transition-shadow group-hover:shadow-[0_0_28px_rgba(99,102,241,0.5)]">
@@ -73,19 +94,40 @@ export default function Navbar({ session }) {
                 Login
               </Link>
               <Link
-                to="/signup"
+                to={session ? "/dashboard" : "/signup"}
                 className="px-4 py-1.5 rounded-lg text-[13.5px] font-semibold text-white bg-indigo-600 hover:bg-indigo-500 shadow-[0_0_20px_rgba(99,102,241,0.3)] hover:shadow-[0_0_28px_rgba(99,102,241,0.45)] transition-all no-underline"
               >
-                Get started
+                {session ? "Dashboard" : "Get started"}
               </Link>
             </>
           ) : (
-            <button
-              onClick={logout}
-              className="px-4 py-1.5 rounded-lg text-[13.5px] font-medium text-red-400 border border-red-400/20 bg-red-400/[0.05] hover:bg-red-400/10 transition-all cursor-pointer"
-            >
-              Logout
-            </button>
+            <div className="flex items-center gap-3">
+              <Link
+                to="/dashboard"
+                className="flex items-center gap-2 px-3 py-1.5 rounded-xl border border-white/[0.06] bg-white/[0.03] hover:bg-white/[0.05] transition-all no-underline"
+              >
+                <div className="w-8 h-8 rounded-full bg-indigo-600 flex items-center justify-center text-[11px] font-bold text-white shadow-[0_0_14px_rgba(99,102,241,0.35)]">
+                  {initials()}
+                </div>
+
+                <div className="flex flex-col leading-none">
+                  <span className="text-[12px] font-medium text-white">
+                    {displayName()}
+                  </span>
+
+                  <span className="text-[10px] text-white/40 mt-1">
+                    Active now
+                  </span>
+                </div>
+              </Link>
+
+              <button
+                onClick={logout}
+                className="w-9 h-9 rounded-xl flex items-center justify-center border border-red-400/15 bg-red-400/[0.05] text-red-400 hover:bg-red-400/10 transition-all cursor-pointer"
+              >
+                <LogOut size={15} />
+              </button>
+            </div>
           )}
         </div>
 
@@ -142,6 +184,23 @@ export default function Navbar({ session }) {
           ))}
 
           <div className="h-px bg-white/[0.06] my-1" />
+          {session && (
+            <div className="flex items-center gap-3 px-4 py-3">
+              <div className="w-9 h-9 rounded-full bg-indigo-600 flex items-center justify-center text-[11px] font-bold text-white">
+                {initials()}
+              </div>
+
+              <div>
+                <p className="text-[13px] font-medium text-white">
+                  {initials()}
+                </p>
+
+                <p className="text-[11px] text-white/40 mt-0.5">
+                  {displayName()}
+                </p>
+              </div>
+            </div>
+          )}
 
           {!session ? (
             <div className="flex flex-col gap-2 pt-1">
