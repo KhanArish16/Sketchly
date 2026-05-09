@@ -147,7 +147,11 @@ export default function TldrawCanvas({ roomId }) {
 
   return (
     <div className="flex-1 bg-[#0F1117] relative">
-      <Tldraw store={store} onMount={handleMount} />
+      <Tldraw
+        store={store}
+        onMount={handleMount}
+        licenseKey={process.env.VITE_TLDRAW_LICENSE_KEY}
+      />
 
       {loading && (
         <div className="absolute inset-0 bg-[#0F1117] flex items-center justify-center z-50">
